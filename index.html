@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Human Design</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.js"></script>
+  <style>
+    body {
+      margin: 0;
+      overflow-x: hidden;
+      background: #fff;
+    }
+
+    .article-wrapper {
+      display: flex;
+      justify-content: center;
+      background: #fff;
+    }
+
+    .article img {
+      display: block;
+      width: 100vw;
+      height: auto;
+      object-fit: contain;
+    }
+
+    #illustrationCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: auto;
+      z-index: 10;
+      background: transparent;
+    }
+
+    img.Human-Design {
+      position: absolute !important;
+      top: 20% !important;
+      right: 20% !important;
+      width: 25% !important;
+      height: auto !important;
+      z-index: 11 !important;
+      pointer-events: auto;
+      filter: brightness(1.1) contrast(1.05);
+      transition: filter 2s ease-in-out, opacity 2s ease-in-out;
+      cursor: pointer;
+    }
+
+    img.Human-Design:hover {
+      filter: grayscale(60%) brightness(1);
+    }
+
+    img.Human-Design.faded {
+      filter: grayscale(100%) brightness(0.8);
+      opacity: 0.8;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="article-wrapper">
+    <div class="article">
+      <img src="img/3.png" alt="Wired Article Screenshot" />
+    </div>
+  </div>
+
+  <img src="img/human image.png" alt="Human Design" class="Human-Design" id="humanImg" />
+
+  <div id="illustrationCanvas"></div>
+<script>
+  let dots = [];
+  let colors = ["#F7ECA3", "#FF8E72", "#7EAEC2", "#CAA6C2", "#F45646"];
+  let numDots = 25;
+  let draggingDot = null;
+  let startTime;
+  let dotsVisible = true;
+  let fadingOut = false;
+
+  function setup() {
+    let cnv = createCanvas(windowWidth, windowHeight);
+    cnv.parent("illustrationCanvas");
+    noStroke();
+    startTime = millis();
+
+    for (let i = 0; i < numDots; i++) {
+      dots.push({
+        color: random(colors),
+        x: random(width),
+        y: random(height),
+        baseSize: random(60, 150),
+        lifeOffset: random(TWO_PI),
+        highlight: false,
+        alpha: 200,
+      });
+    }
+  }
+
+  function draw() {
+    clear();
+    let t = millis() / 1000;
+
+    for (let d of dots) {
+      if (!dotsVisible) {
+        d.alpha = max(0, d.alpha - 5);
+      } else if (d.alpha < 200) {
+        d.alpha = min(200, d.alpha + 3);
+      }
+
+      let breathing = sin(t * 1.5 + d.lifeOffset) * 25;
+      let size = d.baseSize + breathing;
+
+      if (draggingDot !== d) {
+        d.x += sin(t * 0.8 + d.lifeOffset) * 0.3;
+        d.y += cos(t * 0.8 + d.lifeOffset) * 0.3;
+      }
+
+      let fade = (sin(t * 0.5 + d.lifeOffset) + 1) / 2;
+      let alpha = map(fade, 0, 1, 60, d.alpha);
+
+      if (d.highlight) alpha = 255;
+
+      fill(color(d.color)._getRed(), color(d.color)._getGreen(), color(d.color)._getBlue(), alpha);
+      ellipse(d.x, d.y, size);
+    }
+  }
+
+  function mousePressed() {
+    for (let d of dots) {
+      let distToMouse = dist(mouseX, mouseY, d.x, d.y);
+      if (distToMouse < d.baseSize / 2) {
+        draggingDot = d;
+        d.highlight = true;
+        return;
+      }
+    }
+
+    dots.push({
+      color: random(colors),
+      x: mouseX,
+      y: mouseY,
+      baseSize: random(60, 150),
+      lifeOffset: random(TWO_PI),
+      highlight: false,
+      alpha: 200,
+    });
+  }
+
+  function mouseDragged() {
+    if (draggingDot) {
+      draggingDot.x = mouseX;
+      draggingDot.y = mouseY;
+    }
+  }
+
+  function mouseReleased() {
+    if (draggingDot) {
+      draggingDot.highlight = false;
+      draggingDot = null;
+    }
+  }
+
+
+  let scrollTimeout = null;
+  window.addEventListener("scroll", () => {
+    if (scrollTimeout) clearTimeout(scrollTimeout);
+    scrollTimeout = setTimeout(() => {
+      for (let d of dots) {
+        d.baseSize = max(20, d.baseSize - 10);
+        d.alpha = max(0, d.alpha - 30);
+      }
+    }, 2000);
+  });
+
+
+  const human = document.getElementById("humanImg");
+  human.addEventListener("click", (e) => {
+    if (!fadingOut) {
+      fadingOut = true;
+      human.classList.add("faded");
+      dotsVisible = false;
+
+      setTimeout(() => {
+        human.classList.remove("faded");
+        dotsVisible = true;
+        fadingOut = false;
+      }, 4000);
+    }
+    e.stopPropagation();
+  });
+
+  function windowResized() {
+    resizeCanvas(windowWidth, windowHeight);
+  }
+</script>
+</body>
+</html>
