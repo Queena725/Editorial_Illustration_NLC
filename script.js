@@ -1,75 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>Human Design</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.js"></script>
-  <style>
-    body {
-      margin: 0;
-      overflow-x: hidden;
-      background: #fff;
-    }
 
-    .article-wrapper {
-      display: flex;
-      justify-content: center;
-      background: #fff;
-    }
-
-    .article img {
-      display: block;
-      width: 100vw;
-      height: auto;
-      object-fit: contain;
-    }
-
-    #illustrationCanvas {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      pointer-events: auto;
-      z-index: 10;
-      background: transparent;
-    }
-
-    img.Human-Design {
-      position: absolute !important;
-      top: 20% !important;
-      right: 20% !important;
-      width: 25% !important;
-      height: auto !important;
-      z-index: 11 !important;
-      pointer-events: auto;
-      filter: brightness(1.1) contrast(1.05);
-      transition: filter 2s ease-in-out, opacity 2s ease-in-out;
-      cursor: pointer;
-    }
-
-    img.Human-Design:hover {
-      filter: grayscale(60%) brightness(1);
-    }
-
-    img.Human-Design.faded {
-      filter: grayscale(100%) brightness(0.8);
-      opacity: 0.8;
-    }
-  </style>
-</head>
-
-<body>
-  <div class="article-wrapper">
-    <div class="article">
-      <img src="img/3.png" alt="Wired Article Screenshot" />
-    </div>
-  </div>
-
-  <img src="img/human image.png" alt="Human Design" class="Human-Design" id="humanImg" />
-
-  <div id="illustrationCanvas"></div>
-<script>
   let dots = [];
   let colors = ["#F7ECA3", "#FF8E72", "#7EAEC2", "#CAA6C2", "#F45646"];
   let numDots = 25;
@@ -193,6 +122,3 @@
   function windowResized() {
     resizeCanvas(windowWidth, windowHeight);
   }
-</script>
-</body>
-</html>
